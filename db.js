@@ -29,6 +29,9 @@ async function query_Show(id) {
   try {
     const sql = `SELECT * FROM movies WHERE id = ?`;
     const [rows] = await connection.query(sql, [id]);
+    if (rows.length === 0) {
+      throw { status: 404, message: "Film non trovato" };
+    }
     return rows[0];
   } catch (err) {
     return { message: "Errore nella query show", error: err };

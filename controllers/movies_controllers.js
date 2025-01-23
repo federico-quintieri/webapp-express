@@ -10,10 +10,7 @@ const index = async (req, res) => {
     res.json(movies);
   } catch (error) {
     console.error("Errore nel recupero dei film:", error);
-    res.status(500).json({
-      message: "Errore nel recuperare i film dal database",
-      error: error.message,
-    });
+    next(error); // Passo errore al middleware
   }
 };
 
@@ -27,10 +24,7 @@ const show = async (req, res) => {
     res.json(movie);
   } catch (error) {
     console.error("Errore nel recupero del film:", error);
-    res.status(500).json({
-      message: "Errore nel recuperare il film dal database",
-      error: error.message,
-    });
+    next(error); // Passo l'errore al middleware
   }
 };
 

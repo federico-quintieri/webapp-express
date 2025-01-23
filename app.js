@@ -2,7 +2,6 @@ const express = require("express");
 const app = express();
 const port = 3000;
 const movies_router = require("./routes/movies_routes");
-const middleware_no_route = require("./middleware/no_route");
 
 // Rendo disponibile chiamata a server tramite cors
 
@@ -15,8 +14,10 @@ app.use(express.json());
 // Definizione rotta
 app.use("/movies", movies_router);
 
-// Middleware da eseguire globale se rotta non esiste
-app.use(middleware_no_route);
+// Middleware per rotte non esistenti
+app.use((req, res, next) => {
+    res.status(404).send("Rotta non trovata");
+  });
 
 // Avvio il server
 app.listen(port, () => {
