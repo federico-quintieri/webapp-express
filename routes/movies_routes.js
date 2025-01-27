@@ -6,7 +6,7 @@ const controller = require("../controllers/movies_controllers");
 router.get("/", controller.index);
 
 // Endpoint show
-router.get("/:id", controller.show);
+router.get("/:slug", controller.show);
 
 // Esporto oggetto router
 module.exports = router;

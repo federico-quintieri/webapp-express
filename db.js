@@ -25,10 +25,20 @@ async function query_Index() {
 }
 
 // Mostra una row
-async function query_Show(id) {
+async function query_Show(slug) {
   try {
-    const sql = `SELECT * FROM movies WHERE id = ?`;
-    const [rows] = await connection.query(sql, [id]);
+    const sql = ` SELECT 
+        movies.*,
+        IFNULL(AVG(reviews.vote), 0) AS average_vote
+      FROM 
+        movies
+      LEFT JOIN 
+        reviews ON movies.id = reviews.movie_id
+      WHERE 
+        movies.slug = ?
+      GROUP BY 
+        movies.id;`;
+    const [rows] = await connection.query(sql, [slug]);
     if (rows.length === 0) {
       throw { status: 404, message: "Film non trovato" };
     }
