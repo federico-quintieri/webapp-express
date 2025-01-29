@@ -2,13 +2,13 @@
 const database = require("../db");
 
 // Callback per index
-const index = async (req, res) => {
+const index = async (req, res, next) => {
   try {
     // Prendo query object
     const filters = req.query;
 
     // Chiama la funzione query_Index dal modulo del database
-    const movies = await database.query_Index();
+    const movies = await database.query_Index("movies");
     // Invia i film come risposta JSON
     res.json(movies);
   } catch (error) {
@@ -17,8 +17,24 @@ const index = async (req, res) => {
   }
 };
 
+// Callback per index che restituisce tutte le recensioni dalla tabella reviews
+const indexReviews = async (req, res, next) => {
+  try {
+    // Prendo query object
+    const filters = req.query;
+
+    // Chiama la funzione query_Index dal modulo del database
+    const reviews = await database.query_Index("reviews");
+    // Invia i film come risposta JSON
+    res.json(reviews);
+  } catch (error) {
+    console.error("Errore nel recupero delle recensioni:", error);
+    next(error); // Passo errore al middleware
+  }
+};
+
 // Callback per show
-const show = async (req, res) => {
+const show = async (req, res, next) => {
   const url_Slug = req.params.slug;
   try {
     // Chiama la funzione query_Index dal modulo del database
@@ -64,7 +80,7 @@ const reviewStore = async (req, res) => {
   // Nel try provo a eseguire la query
   try {
     const result = await database.query_storeReview(movieId, name, vote, text);
-    return res.status(500).json(result);
+    return res.status(200).json(result);
   } catch (err) {
     return res.status(400).json({
       status: "Errore",
@@ -74,4 +90,4 @@ const reviewStore = async (req, res) => {
 };
 
 // Esporto le callback per gli endpoint
-module.exports = { index, show, reviewStore };
+module.exports = { index, indexReviews, show, reviewStore };

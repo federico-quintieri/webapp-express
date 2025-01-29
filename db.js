@@ -13,10 +13,10 @@ const connection = sql
 
 // Faccio le funzioni per le call al database
 
-// Mostra tutte le row
-async function query_Index() {
+// Mostra tutto da una tabella
+async function query_Index(table) {
   try {
-    const sql = `SELECT * FROM movies`;
+    const sql = `SELECT * FROM ${table}`;
     const [rows] = await connection.query(sql);
     return rows;
   } catch (err) {
