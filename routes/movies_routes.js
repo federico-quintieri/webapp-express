@@ -12,10 +12,10 @@ router.get("/:slug", controller.show);
 // router.post("/", controller.bookStore);
 
 // Endpoint salvo review di un libro
-router.post("/:id/reviews", controller.reviewStore);
+router.post("/:movieSlug/reviews", controller.reviewStore);
 
 // Endpoint mostro tutte le reviews
-router.get("/get/reviews", controller.indexReviews);
+router.get("/:movieSlug/reviews", controller.indexReviews);
 
 // Esporto oggetto router
 module.exports = router;

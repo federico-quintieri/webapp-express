@@ -20,11 +20,11 @@ const index = async (req, res, next) => {
 // Callback per index che restituisce tutte le recensioni dalla tabella reviews
 const indexReviews = async (req, res, next) => {
   try {
-    // Prendo query object
-    const filters = req.query;
+    // Prendo id movie da parametro url
+    const movieSlug = req.params.movieSlug;
 
     // Chiama la funzione query_Index dal modulo del database
-    const reviews = await database.query_Index("reviews");
+    const reviews = await database.query_ReviewIndex(movieSlug);
     // Invia i film come risposta JSON
     res.json(reviews);
   } catch (error) {
@@ -49,9 +49,8 @@ const show = async (req, res, next) => {
 
 const reviewStore = async (req, res) => {
   // Prendiamo dati dalla richiesta
-  const movieId = parseInt(req.params.id);
+  const movieSlug = req.params.movieSlug;
   const { name, vote, text } = req.body;
-  console.log(movieId, name, vote, text);
 
   // Validazione voto
   if (isNaN(vote) || vote < 0 || vote > 5) {
@@ -79,7 +78,7 @@ const reviewStore = async (req, res) => {
 
   // Nel try provo a eseguire la query
   try {
-    const result = await database.query_storeReview(movieId, name, vote, text);
+    const result = await database.query_storeReview(movieSlug, name, vote, text);
     return res.status(200).json(result);
   } catch (err) {
     return res.status(400).json({

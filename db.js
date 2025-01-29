@@ -24,6 +24,17 @@ async function query_Index(table) {
   }
 }
 
+// Mostra tutte le reviews di un film
+async function query_ReviewIndex(movieSlug) {
+  try {
+    const sql = `SELECT reviews.* FROM reviews JOIN movies ON reviews.movie_id = movies.id WHERE movies.slug = ?`;
+    const [rows] = await connection.query(sql, [movieSlug]);
+    return rows;
+  } catch (err) {
+    return { message: "Errore nella query index", error: err };
+  }
+}
+
 // Mostra una row
 async function query_Show(slug) {
   try {
@@ -48,31 +59,36 @@ async function query_Show(slug) {
   }
 }
 
-// Salva in un una tabella
-async function query_storeReview(id, name, vote, text) {
+// Salva in una tabella
+async function query_storeReview(movieSlug, name, vote, text) {
   try {
-    // Faccio query per selezionare il libro in base ad id
+    // Query per selezionare il film in base allo slug
     const sql_Book = `
-    SELECT *
-    FROM movies
-    WHERE id = ?
-  `;
-    // Invio questa query e ottengo il risultato con un check
-    const [rows] = await connection.query(sql_Book, [id]);
+      SELECT id
+      FROM movies
+      WHERE slug = ?
+    `;
+    // Eseguo la query e ottengo il risultato
+    const [rows] = await connection.query(sql_Book, [movieSlug]);
+
+    // Se non trovo il film, restituisco errore
     if (rows.length === 0) throw { status: 404, message: "Film non trovato" };
 
-    // Se ho selezionato un libro posso aggiungere una recensione
-    const sql_Review = `
-    INSERT INTO reviews(movie_id, name, vote, text)
-    VALUES (?, ?, ?, ?);
-  `;
-    // Invio la query per aggiungere la recensione
-    const result = connection.query(sql_Review, [id, name, vote, text]);
+    // Estraggo l'id del film trovato
+    const movieId = rows[0].id;
 
-    // Ritornami il result
-    return result && "Ho aggiunto la recensione";
+    // Query per inserire la recensione
+    const sql_Review = `
+      INSERT INTO reviews(movie_id, name, vote, text)
+      VALUES (?, ?, ?, ?);
+    `;
+    // Eseguo la query per aggiungere la recensione
+    await connection.query(sql_Review, [movieId, name, vote, text]);
+
+    // Restituisco conferma dell'inserimento
+    return "Ho aggiunto la recensione";
   } catch (err) {
-    // Se invece c'è un errore lo restituisco in un oggetto
+    // Restituisco un oggetto di errore
     return { message: "Errore nella query storeReview", error: err };
   }
 }
@@ -81,4 +97,5 @@ module.exports = {
   query_Index,
   query_Show,
   query_storeReview,
+  query_ReviewIndex,
 };
