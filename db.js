@@ -48,7 +48,37 @@ async function query_Show(slug) {
   }
 }
 
+// Salva in un una tabella
+async function query_storeReview(id, name, vote, text) {
+  try {
+    // Faccio query per selezionare il libro in base ad id
+    const sql_Book = `
+    SELECT *
+    FROM movies
+    WHERE id = ?
+  `;
+    // Invio questa query e ottengo il risultato con un check
+    const [rows] = await connection.query(sql_Book, [id]);
+    if (rows.length === 0) throw { status: 404, message: "Film non trovato" };
+
+    // Se ho selezionato un libro posso aggiungere una recensione
+    const sql_Review = `
+    INSERT INTO reviews(movie_id, name, vote, text)
+    VALUES (?, ?, ?, ?);
+  `;
+    // Invio la query per aggiungere la recensione
+    const result = connection.query(sql_Review, [id, name, vote, text]);
+
+    // Ritornami il result
+    return result && "Ho aggiunto la recensione";
+  } catch (err) {
+    // Se invece c'è un errore lo restituisco in un oggetto
+    return { message: "Errore nella query storeReview", error: err };
+  }
+}
+
 module.exports = {
   query_Index,
   query_Show,
+  query_storeReview,
 };

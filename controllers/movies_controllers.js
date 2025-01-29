@@ -31,5 +31,47 @@ const show = async (req, res) => {
   }
 };
 
+const reviewStore = async (req, res) => {
+  // Prendiamo dati dalla richiesta
+  const movieId = parseInt(req.params.id);
+  const { name, vote, text } = req.body;
+  console.log(movieId, name, vote, text);
+
+  // Validazione voto
+  if (isNaN(vote) || vote < 0 || vote > 5) {
+    return res.status(400).json({
+      status: "fail",
+      message: "Il voto deve essere valore numerico compreso tra 0 e 5",
+    });
+  }
+
+  // Validazione nome
+  if (name.length <= 3) {
+    return res.status(400).json({
+      status: "fail",
+      message: "Il nome deve essere piu lungo di 3 caratteri",
+    });
+  }
+
+  // Validazione testo
+  if (text && text.length > 0 && text.length < 5) {
+    return res.status(400).json({
+      status: "fail",
+      message: "Il testo deve essere lungo almeno 6 caratteri",
+    });
+  }
+
+  // Nel try provo a eseguire la query
+  try {
+    const result = await database.query_storeReview(movieId, name, vote, text);
+    return res.status(500).json(result);
+  } catch (err) {
+    return res.status(400).json({
+      status: "Errore",
+      error: err,
+    });
+  }
+};
+
 // Esporto le callback per gli endpoint
-module.exports = { index, show };
+module.exports = { index, show, reviewStore };

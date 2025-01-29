@@ -8,5 +8,11 @@ router.get("/", controller.index);
 // Endpoint show
 router.get("/:slug", controller.show);
 
+// Endpoint salvo libro
+// router.post("/", controller.bookStore);
+
+// Endpoint salvo review di un libro
+router.post("/:id/reviews", controller.reviewStore);
+
 // Esporto oggetto router
 module.exports = router;
